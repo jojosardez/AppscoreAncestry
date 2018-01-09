@@ -204,6 +204,10 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AppscoreAncestry.Infrastructure\AppscoreAncestry.Infrastructure.csproj">
+      <Project>{3dc5208f-ba25-49a0-b925-48a4e4c79d27}</Project>
+      <Name>AppscoreAncestry.Infrastructure</Name>
+    </ProjectReference>
     <ProjectReference Include="..\AppscoreAncestry.Services\AppscoreAncestry.Services.csproj">
       <Project>{3fe6af79-e48c-4c5d-ac7a-6a0f91122312}</Project>
       <Name>AppscoreAncestry.Services</Name>
