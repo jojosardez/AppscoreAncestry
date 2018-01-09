@@ -1,8 +1,11 @@
-﻿namespace AppscoreAncestry.Entities
+﻿using System;
+
+namespace AppscoreAncestry.Entities
 {
+    [Flags]
     public enum Gender
     {
-        Male,
-        Female
+        Male = 1,
+        Female = 2
     }
 }

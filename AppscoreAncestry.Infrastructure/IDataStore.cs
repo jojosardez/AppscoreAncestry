@@ -1,7 +1,7 @@
 ﻿namespace AppscoreAncestry.Infrastructure
 {
-    public interface IDataStore
+    public interface IDataStore<T>
     {
-        T Get<T>();
+        T Get();
     }
 }

@@ -3,7 +3,7 @@ using System.IO;
 
 namespace AppscoreAncestry.Infrastructure
 {
-    public class FileDataStore : IDataStore
+    public class FileDataStore<T> : IDataStore<T>
     {
         private readonly string path;
 
@@ -12,7 +12,7 @@ namespace AppscoreAncestry.Infrastructure
             this.path = path;
         }
 
-        public T Get<T>()
+        public T Get()
         {
             string content = File.ReadAllText(path);
             return JsonConvert.DeserializeObject<T>(content);

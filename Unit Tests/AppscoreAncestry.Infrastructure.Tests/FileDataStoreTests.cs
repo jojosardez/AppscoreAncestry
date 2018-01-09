@@ -17,18 +17,17 @@ namespace AppscoreAncestry.Infrastructure.Tests
                 (new FileInfo((new Uri(Assembly.GetAssembly(typeof(FileDataStoreTests)).CodeBase).AbsolutePath)))
                 .Directory.FullName;
             path = path.Replace("%20", " ");
-            FileDataStore dataStore = new FileDataStore(path + "\\TestData\\" + fileName);
+            FileDataStore<Entity> dataStore = new FileDataStore<Entity>(path + "\\TestData\\" + fileName);
             Entity entity = null;
             Exception exception = null;
 
             // Act
-            entity = dataStore.Get<Entity>();
+            entity = dataStore.Get();
 
             // Assert
             Assert.IsNotNull(entity);
             Assert.AreEqual(id, entity.Id);
             Assert.AreEqual(name, entity.Name);
-
         }
 
         [Test]
@@ -39,14 +38,14 @@ namespace AppscoreAncestry.Infrastructure.Tests
                 (new FileInfo((new Uri(Assembly.GetAssembly(typeof(FileDataStoreTests)).CodeBase).AbsolutePath)))
                 .Directory.FullName;
             path = path.Replace("%20", " ");
-            FileDataStore dataStore = new FileDataStore(path + "\\TestData\\DoesNotExists.json");
+            FileDataStore<Entity> dataStore = new FileDataStore<Entity>(path + "\\TestData\\DoesNotExists.json");
             Entity entity = null;
             Exception exception = null;
 
             // Act
             exception = Assert.Catch(() =>
             {
-                entity = dataStore.Get<Entity>();
+                entity = dataStore.Get();
             });
 
             // Assert
