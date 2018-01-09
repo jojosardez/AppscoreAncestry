@@ -43,6 +43,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\AppscoreAncestry.Entities\AppscoreAncestry.Entities.csproj">
+      <Project>{e8cccb8f-053a-4a74-9d15-c637a66a0869}</Project>
+      <Name>AppscoreAncestry.Entities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\AppscoreAncestry.Services\AppscoreAncestry.Services.csproj">
       <Project>{3fe6af79-e48c-4c5d-ac7a-6a0f91122312}</Project>
       <Name>AppscoreAncestry.Services</Name>
