@@ -2,7 +2,6 @@
 using AppscoreAncestry.Entities;
 using AppscoreAncestry.Infrastructure;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,22 +9,19 @@ namespace AppscoreAncestry.Services
 {
     public class PersonSearchService : IPersonSearchService
     {
-        private readonly IDataStore<Place[]> placesDataStore;
-        private readonly IDataStore<Person[]> peopleDataStore;
+        private readonly IDataStore<Data> dataStore;
 
-        public PersonSearchService(IDataStore<Place[]> placesDataStore, IDataStore<Person[]> peopleDataStore)
+        public PersonSearchService(IDataStore<Data> dataStore)
         {
-            this.placesDataStore = placesDataStore;
-            this.peopleDataStore = peopleDataStore;
+            this.dataStore = dataStore;
         }
 
         public PersonView[] Search(string name, Gender gender, int pageNum, int pageSize = 10)
         {
-            Place[] places = placesDataStore.Get();
-            Person[] people = peopleDataStore.Get();
+            Data data = dataStore.Get();
 
-            var query = (from person in people
-                    join place in places
+            var query = (from person in data.people
+                    join place in data.places
                     on person.place_id equals place.id
                     where person.name.Contains(name.Trim(), StringComparison.OrdinalIgnoreCase) && checkPersonGender(person.gender, gender)
                     select new PersonView
@@ -43,13 +39,12 @@ namespace AppscoreAncestry.Services
 
         public PersonView[] AncestrySearch(string name, Gender gender, Ancestry anchestry)
         {
-            Place[] places = placesDataStore.Get();
-            Person[] people = peopleDataStore.Get();
+            Data data = dataStore.Get();
 
-            Person current = people.FirstOrDefault(p => p.name.Equals(name.Trim(), StringComparison.InvariantCultureIgnoreCase));
-            var ancestryList = current != null ? FindAncestry(people, current, gender, anchestry) : new List<Person>();
+            Person current = data.people.FirstOrDefault(p => p.name.Equals(name.Trim(), StringComparison.InvariantCultureIgnoreCase));
+            var ancestryList = current != null ? FindAncestry(data.people, current, gender, anchestry) : new List<Person>();
             var query = (from person in ancestryList.ToArray()
-                    join place in places
+                    join place in data.places
                     on person.place_id equals place.id
                     orderby person.level, person.id
                     select new PersonView

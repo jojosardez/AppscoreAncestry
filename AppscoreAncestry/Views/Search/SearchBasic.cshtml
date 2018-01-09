@@ -1,0 +1,73 @@
+﻿@model AppscoreAncestry.Models.SearchModel
+
+@{
+    ViewBag.Title = "Search";
+}
+
+@using (Html.BeginForm())
+{
+    <div class="row">
+        <div class="col-md-8">
+            <div class="form-group">
+                @Html.EditorFor(model => model.Name, new {htmlAttributes = new {@class = "form-control form-control-lg"}})
+            </div>
+            <div class="form-group">
+                <label>Gender:</label>
+                <label class="form-check-label">
+                    @Html.EditorFor(model => model.GenderMale, new {htmlAttributes = new {@class = "form-check-input", type = "checkbox"}})
+                    @Html.LabelFor(model => model.GenderMale)
+                </label>
+                <label class="form-check-label">
+                    @Html.EditorFor(model => model.GenderFemale, new {htmlAttributes = new {@class = "form-check-input", type = "checkbox"}})
+                    @Html.LabelFor(model => model.GenderFemale)
+                </label>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <button type="submit" class="btn btn-block">Search</button>
+            </div>
+            <div class="form-group">
+                <div class="text-center">
+                    @Html.ActionLink("Advanced search", "SearchAdvance")
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <label>Results:</label>
+    </div>
+    <div class="row">
+        <table class="table table-bordered">
+            <tr class="panel-success">
+                <th>ID</th>
+                <th>NAME</th>
+                <th>GENDER</th>
+                <th>BIRTHPLACE</th>
+            </tr>
+            @if (Model?.SearchResults != null)
+            {
+                foreach (var item in Model.SearchResults)
+                {
+                    Html.RenderPartial("PersonLineItem", item);
+                }
+            }
+        </table>
+    </div>
+    <div class="row">
+        @if (Model?.SearchResults != null)
+        {
+            @Html.HiddenFor(model => model.pageNum)
+            <label>Go to page:</label>
+            if (Model.pageNum > 1)
+            {
+                <input class="btn" name="pageNumber" type="submit" value="@(Model.pageNum - 1)">
+            }
+            <button type="button" class="btn" disabled>@Model.pageNum</button>
+            if (Model.SearchResults.Length == 10)
+            {
+                <input class="btn" name="pageNumber" type="submit" value="@(Model.pageNum + 1)">
+            }
+        }
+    </div>
+}

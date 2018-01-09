@@ -1,10 +1,10 @@
-﻿using System.Linq;
-using AppscoreAncestry.Entities;
+﻿using AppscoreAncestry.Entities;
 using AppscoreAncestry.Infrastructure;
 using AppscoreAncestry.Services.Tests.TestData;
 using Moq;
 using NUnit.Framework;
 using StructureMap.AutoMocking.Moq;
+using System.Linq;
 
 namespace AppscoreAncestry.Services.Tests
 {
@@ -23,12 +23,13 @@ namespace AppscoreAncestry.Services.Tests
         public void WhenSearchingPeople(string name, Gender? gender, int pageNum, int pageSize, int resultCount)
         {
             // Arrange
-            Mock.Get(Get<IDataStore<Place[]>>())
+            Mock.Get(Get<IDataStore<Data>>())
                 .Setup(ds => ds.Get())
-                .Returns(TestPlaces.GetPlaces());
-            Mock.Get(Get<IDataStore<Person[]>>())
-                .Setup(ds => ds.Get())
-                .Returns(TestPeople.GetPeople());
+                .Returns(new Data
+                {
+                    places = TestPlaces.GetPlaces(),
+                    people = TestPeople.GetPeople()
+                });
             PersonView[] result = null;
 
             // Act
@@ -38,8 +39,7 @@ namespace AppscoreAncestry.Services.Tests
             Assert.IsNotNull(result);
             Assert.AreEqual(resultCount, result.Length);
         }
-
-
+        
         [TestCase(" SteVE Jobs  ", Gender.Male, Ancestry.Ancestors, 1, new[] {100})]
         [TestCase(" SteVE Jobs  ", Gender.Female, Ancestry.Ancestors, 1, new[] {101})]
         [TestCase("STEVE JOBS", Gender.Male | Gender.Female, Ancestry.Ancestors, 2, new[] {100, 101})]
@@ -48,16 +48,20 @@ namespace AppscoreAncestry.Services.Tests
         [TestCase("  Steve Jobs  ", null, Ancestry.Descendants, 4, new[] {300, 301, 302, 303})]
         [TestCase("Isabel Tyson", null, Ancestry.Ancestors, 6, new[] {100, 101, 210, 211, 312, 313})]
         [TestCase("Isabel Tyson", null, Ancestry.Descendants, 0, new int[0])]
+        [TestCase("Steve", null, Ancestry.Descendants, 0, new int[0])]
+        [TestCase("", null, Ancestry.Descendants, 0, new int[0])]
+        [TestCase("fehfuiwh", null, Ancestry.Ancestors, 0, new int[0])]
         public void WhenSearchingAncestry(string name, Gender? gender, Ancestry ancestry, int resultCount,
             int[] expectedIds)
         {
             // Arrange
-            Mock.Get(Get<IDataStore<Place[]>>())
+            Mock.Get(Get<IDataStore<Data>>())
                 .Setup(ds => ds.Get())
-                .Returns(TestPlaces.GetPlaces());
-            Mock.Get(Get<IDataStore<Person[]>>())
-                .Setup(ds => ds.Get())
-                .Returns(TestPeople.GetPeople());
+                .Returns(new Data
+                {
+                    places = TestPlaces.GetPlaces(),
+                    people = TestPeople.GetPeople()
+                });
             PersonView[] result = null;
 
             // Act

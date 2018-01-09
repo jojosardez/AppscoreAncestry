@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ancestry.cs" />
+    <Compile Include="Data.cs" />
     <Compile Include="Gender.cs" />
     <Compile Include="Person.cs" />
     <Compile Include="PersonView.cs" />
