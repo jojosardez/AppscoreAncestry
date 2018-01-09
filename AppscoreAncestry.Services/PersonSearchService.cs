@@ -23,7 +23,8 @@ namespace AppscoreAncestry.Services
             var query = (from person in data.people
                     join place in data.places
                     on person.place_id equals place.id
-                    where person.name.Contains(name.Trim(), StringComparison.OrdinalIgnoreCase) && checkPersonGender(person.gender, gender)
+                    where person.name.Contains(name?.Trim(), StringComparison.OrdinalIgnoreCase) &&
+                          CheckPersonGender(person.gender, gender)
                     select new PersonView
                     {
                         Id = person.id,
@@ -41,8 +42,13 @@ namespace AppscoreAncestry.Services
         {
             Data data = dataStore.Get();
 
-            Person current = data.people.FirstOrDefault(p => p.name.Equals(name.Trim(), StringComparison.InvariantCultureIgnoreCase));
-            var ancestryList = current != null ? FindAncestry(data.people, current, gender, anchestry) : new List<Person>();
+            Person current =
+                data.people.FirstOrDefault(
+                    p => p.name.Equals(name?.Trim(), StringComparison.InvariantCultureIgnoreCase));
+            var ancestryList = current != null
+                ? FindAncestry(GetPeopleByIdDictionary(data.people), GetPeopleByParentIdDictionary(data.people),
+                    current, gender, anchestry, 0)
+                : new List<Person>();
             var query = (from person in ancestryList.ToArray()
                     join place in data.places
                     on person.place_id equals place.id
@@ -58,7 +64,9 @@ namespace AppscoreAncestry.Services
             return query.ToArray();
         }
 
-        private List<Person> FindAncestry(Person[] people, Person current, Gender gender, Ancestry ancestry)
+        private List<Person> FindAncestry(Dictionary<int, Person> people, Dictionary<int, Person[]> descendants,
+            Person current, Gender gender,
+            Ancestry ancestry, int count)
         {
             List<Person> ancestryList = new List<Person>();
 
@@ -67,32 +75,47 @@ namespace AppscoreAncestry.Services
                 case Ancestry.Ancestors:
                     if (current.father_id.HasValue)
                     {
-                        var father = people.FirstOrDefault(p => p.id == current.father_id);
-                        if (father != null)
+                        if (people.TryGetValue(current.father_id.Value, out var father))
                         {
-                            if (checkPersonGender(father.gender, gender))
+                            if (CheckPersonGender(father.gender, gender))
+                            {
                                 ancestryList.Add(father);
-                            ancestryList.AddRange(FindAncestry(people, father, gender, ancestry));
+                                count++;
+                            }
+                            if (count < 10)
+                                ancestryList.AddRange(
+                                    FindAncestry(people, descendants, father, gender, ancestry, count));
                         }
                     }
                     if (current.mother_id.HasValue)
                     {
-                        var mother = people.FirstOrDefault(p => p.id == current.mother_id);
-                        if (mother != null)
+                        if (people.TryGetValue(current.mother_id.Value, out var mother))
                         {
-                            if (checkPersonGender(mother.gender, gender))
+                            if (CheckPersonGender(mother.gender, gender))
+                            {
                                 ancestryList.Add(mother);
-                            ancestryList.AddRange(FindAncestry(people, mother, gender, ancestry));
+                                count++;
+                            }
+                            if (count < 10)
+                                ancestryList.AddRange(
+                                    FindAncestry(people, descendants, mother, gender, ancestry, count));
                         }
                     }
                     break;
                 case Ancestry.Descendants:
-                    var children = people.Where(p => p.father_id == current.id || p.mother_id == current.id);
-                    foreach (var child in children)
+                    if (descendants.TryGetValue(current.id, out var children))
                     {
-                        if (checkPersonGender(child.gender, gender))
-                            ancestryList.Add(child);
-                        ancestryList.AddRange(FindAncestry(people, child, gender, ancestry));
+                        foreach (var child in children)
+                        {
+                            if (CheckPersonGender(child.gender, gender))
+                            {
+                                ancestryList.Add(child);
+                                count++;
+                            }
+                            if (count < 10)
+                                ancestryList.AddRange(FindAncestry(people, descendants, child, gender, ancestry,
+                                    count));
+                        }
                     }
                     break;
             }
@@ -100,7 +123,7 @@ namespace AppscoreAncestry.Services
             return ancestryList;
         }
 
-        private bool checkPersonGender(char gender, Gender requestGender)
+        private bool CheckPersonGender(char gender, Gender requestGender)
         {
             if ((requestGender & Gender.Male) == Gender.Male && gender == 'M')
                 return true;
@@ -108,6 +131,18 @@ namespace AppscoreAncestry.Services
                 return true;
 
             return false;
+        }
+
+        private Dictionary<int, Person> GetPeopleByIdDictionary(Person[] people)
+        {
+            return people.Select(p => p).ToDictionary(per => per.id, per => per);
+        }
+
+        private Dictionary<int, Person[]> GetPeopleByParentIdDictionary(Person[] people)
+        {
+            var fathers = people.Where(p => p.father_id.HasValue).GroupBy(p => p.father_id.GetValueOrDefault()).ToDictionary(per => per.Key, per => per.ToArray());
+            var mothers = people.Where(p => p.mother_id.HasValue).GroupBy(p => p.mother_id.GetValueOrDefault()).ToDictionary(per => per.Key, per => per.ToArray());
+            return fathers.Concat(mothers).ToDictionary(p => p.Key, p => p.Value);
         }
     }
 }

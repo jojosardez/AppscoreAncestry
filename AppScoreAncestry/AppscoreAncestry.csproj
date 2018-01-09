@@ -215,6 +215,7 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Search\SearchBasic.cshtml" />
     <Content Include="Views\Search\PersonLineItem.cshtml" />
+    <Content Include="Views\Search\SearchAdvance.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

@@ -41,6 +41,28 @@ namespace AppscoreAncestry.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public ActionResult SearchAdvance()
+        {
+            var model = new SearchModel
+            {
+                Name = string.Empty,
+                Ancestors = true,
+                SearchResults = new PersonView[0]
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult SearchAdvance(SearchModel model)
+        {
+            model.SearchResults = service.AncestrySearch(
+                model.Name,
+                GetSelectedGender(model.GenderMale, model.GenderFemale),
+                model.Ancestors ? Ancestry.Ancestors : Ancestry.Descendants);
+            return View(model);
+        }
+
         private Gender GetSelectedGender(bool male, bool female)
         {
             if ((male && female) || (!male && !female))
