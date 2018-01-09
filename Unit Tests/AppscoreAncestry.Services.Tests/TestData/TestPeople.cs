@@ -66,7 +66,7 @@ namespace AppscoreAncestry.Services.Tests.TestData
                     father_id = null,
                     mother_id = null,
                     place_id = 105,
-                    level = 0
+                    level = 1
                 },
                 new Person
                 {

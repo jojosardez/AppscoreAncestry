@@ -1,7 +1,9 @@
-﻿using System;
-using AppscoreAncestry.Common.Extensions;
+﻿using AppscoreAncestry.Common.Extensions;
 using AppscoreAncestry.Entities;
 using AppscoreAncestry.Infrastructure;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace AppscoreAncestry.Services
@@ -19,19 +21,14 @@ namespace AppscoreAncestry.Services
 
         public PersonView[] Search(string name, Gender gender, int pageNum, int pageSize = 10)
         {
-            return SearchFromDataStore(name, gender, pageNum, pageSize);
-        }
-
-        private PersonView[] SearchFromDataStore(string name, Gender gender, int pageNum, int pageSize)
-        {
             Place[] places = placesDataStore.Get();
             Person[] people = peopleDataStore.Get();
 
             var query = (from person in people
                     join place in places
                     on person.place_id equals place.id
-                    where person.name.Contains(name, StringComparison.OrdinalIgnoreCase) && checkPersonGender(person.gender, gender)
-                         select new PersonView
+                    where person.name.Contains(name.Trim(), StringComparison.OrdinalIgnoreCase) && checkPersonGender(person.gender, gender)
+                    select new PersonView
                     {
                         Id = person.id,
                         Name = person.name,
@@ -42,6 +39,70 @@ namespace AppscoreAncestry.Services
                 .Take(pageSize);
 
             return query.ToArray();
+        }
+
+        public PersonView[] AncestrySearch(string name, Gender gender, Ancestry anchestry)
+        {
+            Place[] places = placesDataStore.Get();
+            Person[] people = peopleDataStore.Get();
+
+            Person current = people.FirstOrDefault(p => p.name.Equals(name.Trim(), StringComparison.InvariantCultureIgnoreCase));
+            var ancestryList = current != null ? FindAncestry(people, current, gender, anchestry) : new List<Person>();
+            var query = (from person in ancestryList.ToArray()
+                    join place in places
+                    on person.place_id equals place.id
+                    orderby person.level, person.id
+                    select new PersonView
+                    {
+                        Id = person.id,
+                        Name = person.name,
+                        Gender = person.gender.Equals('M') ? Gender.Male : Gender.Female,
+                        BirthPlace = place.name
+                    })
+                .Take(10);
+            return query.ToArray();
+        }
+
+        private List<Person> FindAncestry(Person[] people, Person current, Gender gender, Ancestry ancestry)
+        {
+            List<Person> ancestryList = new List<Person>();
+
+            switch (ancestry)
+            {
+                case Ancestry.Ancestors:
+                    if (current.father_id.HasValue)
+                    {
+                        var father = people.FirstOrDefault(p => p.id == current.father_id);
+                        if (father != null)
+                        {
+                            if (checkPersonGender(father.gender, gender))
+                                ancestryList.Add(father);
+                            ancestryList.AddRange(FindAncestry(people, father, gender, ancestry));
+                        }
+                    }
+                    if (current.mother_id.HasValue)
+                    {
+                        var mother = people.FirstOrDefault(p => p.id == current.mother_id);
+                        if (mother != null)
+                        {
+                            if (checkPersonGender(mother.gender, gender))
+                                ancestryList.Add(mother);
+                            ancestryList.AddRange(FindAncestry(people, mother, gender, ancestry));
+                        }
+                    }
+                    break;
+                case Ancestry.Descendants:
+                    var children = people.Where(p => p.father_id == current.id || p.mother_id == current.id);
+                    foreach (var child in children)
+                    {
+                        if (checkPersonGender(child.gender, gender))
+                            ancestryList.Add(child);
+                        ancestryList.AddRange(FindAncestry(people, child, gender, ancestry));
+                    }
+                    break;
+            }
+
+            return ancestryList;
         }
 
         private bool checkPersonGender(char gender, Gender requestGender)
