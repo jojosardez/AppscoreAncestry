@@ -8,16 +8,13 @@ namespace AppscoreAncestry.Infrastructure.Tests
     [TestFixture]
     public class FileDataStoreTests
     {
-        [TestCase("Valid.json", 12345, "Test")]
-        [TestCase("Invalid.json", 0, null)]
-        public void WhenGettingFromDataStore(string fileName, int id, string name)
+        [TestCase(true, "Valid.json", 12345, "Test")]
+        [TestCase(false, "Invalid.json", 0, null)]
+        public void WhenGettingFromDataStore(bool isValid, string fileName, int id, string name)
         {
             // Arrange
-            string path =
-                (new FileInfo((new Uri(Assembly.GetAssembly(typeof(FileDataStoreTests)).CodeBase).AbsolutePath)))
-                .Directory.FullName;
-            path = path.Replace("%20", " ");
-            FileDataStore<Entity> dataStore = new FileDataStore<Entity>(path + "\\TestData\\" + fileName);
+            CreateTextFile(isValid);
+            FileDataStore<Entity> dataStore = new FileDataStore<Entity>(fileName);
             Entity entity = null;
             Exception exception = null;
 
@@ -34,11 +31,7 @@ namespace AppscoreAncestry.Infrastructure.Tests
         public void WhenFileDoesNotExists()
         {
             // Arrange
-            string path =
-                (new FileInfo((new Uri(Assembly.GetAssembly(typeof(FileDataStoreTests)).CodeBase).AbsolutePath)))
-                .Directory.FullName;
-            path = path.Replace("%20", " ");
-            FileDataStore<Entity> dataStore = new FileDataStore<Entity>(path + "\\TestData\\DoesNotExists.json");
+            FileDataStore<Entity> dataStore = new FileDataStore<Entity>("DoesNotExists.json");
             Entity entity = null;
             Exception exception = null;
 
@@ -50,6 +43,16 @@ namespace AppscoreAncestry.Infrastructure.Tests
 
             // Assert
             Assert.IsNotNull(exception);
+        }
+
+        private void CreateTextFile(bool isValid)
+        {
+            using (var fs = new FileStream(isValid ? "Valid.json" : "Invalid.json", FileMode.Create))
+            {
+                StreamWriter sw = new StreamWriter(fs);
+                sw.Write(isValid ? "{\"Id\": 12345,\"Name\": \"Test\"}" : "{\"aa\": \"bb\",\"cc\": 1}");
+                sw.Flush();
+            }
         }
     }
 }

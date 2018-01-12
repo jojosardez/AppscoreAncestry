@@ -44,7 +44,7 @@ namespace AppscoreAncestry.Services
 
             Person current =
                 data.people.FirstOrDefault(
-                    p => p.name.Equals(name?.Trim(), StringComparison.InvariantCultureIgnoreCase));
+                    p => p.name.Equals(name?.Trim(), StringComparison.CurrentCultureIgnoreCase));
             var ancestryList = current != null
                 ? FindAncestry(GetPeopleByIdDictionary(data.people), GetPeopleByParentIdDictionary(data.people),
                     current, gender, anchestry, 0)

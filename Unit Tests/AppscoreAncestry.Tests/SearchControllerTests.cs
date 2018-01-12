@@ -4,22 +4,23 @@ using AppscoreAncestry.Models;
 using AppscoreAncestry.Services;
 using Moq;
 using NUnit.Framework;
-using StructureMap.AutoMocking.Moq;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppscoreAncestry.Tests
 {
     [TestFixture]
-    public class SearchControllerTests : MoqAutoMocker<SearchController>
+    public class SearchControllerTests
     {
         [Test]
         public void WhenGettingBasicSearch()
         {
             // Arrange
+            Mock<IPersonSearchService> service = new Mock<IPersonSearchService>();
+            SearchController classUnderTest = new SearchController(service.Object);
             ViewResult result = null;
 
             // Act
-            result = ClassUnderTest.SearchBasic() as ViewResult;
+            result = classUnderTest.SearchBasic() as ViewResult;
 
             // Assert
             Assert.IsNotNull(result);
@@ -38,8 +39,8 @@ namespace AppscoreAncestry.Tests
         public void WhenPostingBasicSearch(int expectedPageNo, string pageNumber)
         {
             // Arrange
-            Mock.Get(Get<IPersonSearchService>())
-                .Setup(svc => svc.Search(It.IsAny<string>(), It.IsAny<Gender>(), It.IsAny<int>(), It.IsAny<int>()))
+            Mock<IPersonSearchService> service = new Mock<IPersonSearchService>();
+            service.Setup(svc => svc.Search(It.IsAny<string>(), It.IsAny<Gender>(), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(new[]
                 {
                     new PersonView
@@ -50,6 +51,7 @@ namespace AppscoreAncestry.Tests
                         BirthPlace = "test"
                     }
                 });
+            SearchController classUnderTest = new SearchController(service.Object);
             ViewResult result = null;
             SearchModel model = new SearchModel
             {
@@ -60,7 +62,7 @@ namespace AppscoreAncestry.Tests
             };
 
             // Act
-            result = ClassUnderTest.SearchBasic(model, pageNumber) as ViewResult;
+            result = classUnderTest.SearchBasic(model, pageNumber) as ViewResult;
 
             // Assert
             Assert.IsNotNull(result);
@@ -78,10 +80,12 @@ namespace AppscoreAncestry.Tests
         public void WhenGettingAdvanceSearch()
         {
             // Arrange
+            Mock<IPersonSearchService> service = new Mock<IPersonSearchService>();
+            SearchController classUnderTest = new SearchController(service.Object);
             ViewResult result = null;
 
             // Act
-            result = ClassUnderTest.SearchAdvance() as ViewResult;
+            result = classUnderTest.SearchAdvance() as ViewResult;
 
             // Assert
             Assert.IsNotNull(result);
@@ -99,8 +103,8 @@ namespace AppscoreAncestry.Tests
         public void WhenPostingAdvanceSearch()
         {
             // Arrange
-            Mock.Get(Get<IPersonSearchService>())
-                .Setup(svc => svc.AncestrySearch(It.IsAny<string>(), It.IsAny<Gender>(), It.IsAny<Ancestry>()))
+            Mock<IPersonSearchService> service = new Mock<IPersonSearchService>();
+            service.Setup(svc => svc.AncestrySearch(It.IsAny<string>(), It.IsAny<Gender>(), It.IsAny<Ancestry>()))
                 .Returns(new[]
                 {
                     new PersonView
@@ -111,6 +115,7 @@ namespace AppscoreAncestry.Tests
                         BirthPlace = "test"
                     }
                 });
+            SearchController classUnderTest = new SearchController(service.Object);
             ViewResult result = null;
             SearchModel model = new SearchModel
             {
@@ -121,7 +126,7 @@ namespace AppscoreAncestry.Tests
             };
 
             // Act
-            result = ClassUnderTest.SearchAdvance(model) as ViewResult;
+            result = classUnderTest.SearchAdvance(model) as ViewResult;
 
             // Assert
             Assert.IsNotNull(result);

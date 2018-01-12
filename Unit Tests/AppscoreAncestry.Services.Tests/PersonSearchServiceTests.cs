@@ -1,15 +1,14 @@
 ﻿using AppscoreAncestry.Entities;
 using AppscoreAncestry.Infrastructure;
 using AppscoreAncestry.Services.Tests.TestData;
-using Moq;
 using NUnit.Framework;
-using StructureMap.AutoMocking.Moq;
 using System.Linq;
+using Moq;
 
 namespace AppscoreAncestry.Services.Tests
 {
     [TestFixture()]
-    public class PersonSearchServiceTests : MoqAutoMocker<PersonSearchService>
+    public class PersonSearchServiceTests
     {
         [TestCase("", Gender.Male, 1, 5, 5)]
         [TestCase("", Gender.Male, 2, 5, 0)]
@@ -23,17 +22,18 @@ namespace AppscoreAncestry.Services.Tests
         public void WhenSearchingPeople(string name, Gender? gender, int pageNum, int pageSize, int resultCount)
         {
             // Arrange
-            Mock.Get(Get<IDataStore<Data>>())
-                .Setup(ds => ds.Get())
+            Mock<IDataStore<Data>> dataStore = new Mock<IDataStore<Data>>();
+            dataStore.Setup(ds => ds.Get())
                 .Returns(new Data
                 {
                     places = TestPlaces.GetPlaces(),
                     people = TestPeople.GetPeople()
                 });
+            PersonSearchService classUnderTest = new PersonSearchService(dataStore.Object);
             PersonView[] result = null;
 
             // Act
-            result = ClassUnderTest.Search(name, gender.HasValue ? gender.Value : Gender.Male | Gender.Female, pageNum, pageSize);
+            result = classUnderTest.Search(name, gender.HasValue ? gender.Value : Gender.Male | Gender.Female, pageNum, pageSize);
 
             // Assert
             Assert.IsNotNull(result);
@@ -55,17 +55,18 @@ namespace AppscoreAncestry.Services.Tests
             int[] expectedIds)
         {
             // Arrange
-            Mock.Get(Get<IDataStore<Data>>())
-                .Setup(ds => ds.Get())
+            Mock<IDataStore<Data>> dataStore = new Mock<IDataStore<Data>>();
+            dataStore.Setup(ds => ds.Get())
                 .Returns(new Data
                 {
                     places = TestPlaces.GetPlaces(),
                     people = TestPeople.GetPeople()
                 });
+            PersonSearchService classUnderTest = new PersonSearchService(dataStore.Object);
             PersonView[] result = null;
 
             // Act
-            result = ClassUnderTest.AncestrySearch(name, gender.HasValue ? gender.Value : Gender.Male | Gender.Female,
+            result = classUnderTest.AncestrySearch(name, gender.HasValue ? gender.Value : Gender.Male | Gender.Female,
                 ancestry);
             Assert.IsNotNull(result);
             Assert.AreEqual(resultCount, result.Length);

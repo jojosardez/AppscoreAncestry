@@ -5,9 +5,9 @@ VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppscoreAncestry", "AppscoreAncestry\AppscoreAncestry.csproj", "{FD69C153-62E2-4C83-8BEA-681C0B41E396}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppscoreAncestry.Services", "AppscoreAncestry.Services\AppscoreAncestry.Services.csproj", "{3FE6AF79-E48C-4C5D-AC7A-6A0F91122312}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppscoreAncestry.Services", "AppscoreAncestry.Services\AppscoreAncestry.Services.csproj", "{3FE6AF79-E48C-4C5D-AC7A-6A0F91122312}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppscoreAncestry.Infrastructure", "AppscoreAncestry.Infrastructure\AppscoreAncestry.Infrastructure.csproj", "{3DC5208F-BA25-49A0-B925-48A4E4C79D27}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppscoreAncestry.Infrastructure", "AppscoreAncestry.Infrastructure\AppscoreAncestry.Infrastructure.csproj", "{3DC5208F-BA25-49A0-B925-48A4E4C79D27}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unit Tests", "Unit Tests", "{7C5E2707-3739-4DA0-9E3F-E0EC5EF04722}"
 EndProject
@@ -19,9 +19,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppscoreAncestry.Infrastruc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppscoreAncestry.Services.Tests", "Unit Tests\AppscoreAncestry.Services.Tests\AppscoreAncestry.Services.Tests.csproj", "{AD9A6F83-49EA-4B48-AA4D-1BCD1840C7D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppscoreAncestry.Entities", "AppscoreAncestry.Entities\AppscoreAncestry.Entities.csproj", "{E8CCCB8F-053A-4A74-9D15-C637A66A0869}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppscoreAncestry.Entities", "AppscoreAncestry.Entities\AppscoreAncestry.Entities.csproj", "{E8CCCB8F-053A-4A74-9D15-C637A66A0869}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppscoreAncestry.Common", "AppscoreAncestry.Common\AppscoreAncestry.Common.csproj", "{44ECEC0C-3747-4EE8-BC93-5EF938A7ABA9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppscoreAncestry.Common", "AppscoreAncestry.Common\AppscoreAncestry.Common.csproj", "{44ECEC0C-3747-4EE8-BC93-5EF938A7ABA9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
