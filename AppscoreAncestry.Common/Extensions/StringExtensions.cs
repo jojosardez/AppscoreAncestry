@@ -6,7 +6,7 @@ namespace AppscoreAncestry.Common.Extensions
     {
         public static bool Contains(this string source, string value, StringComparison compare)
         {
-            return source.IndexOf(value, compare) >= 0;
+            return source.IndexOf(value == null? string.Empty : value, compare) >= 0;
         }
     }
 }
