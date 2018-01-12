@@ -5,7 +5,7 @@ using AppscoreAncestry.Services;
 using Moq;
 using NUnit.Framework;
 using StructureMap.AutoMocking.Moq;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AppscoreAncestry.Tests
 {

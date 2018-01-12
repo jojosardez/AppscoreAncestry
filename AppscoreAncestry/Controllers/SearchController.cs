@@ -1,7 +1,7 @@
 ﻿using AppscoreAncestry.Entities;
 using AppscoreAncestry.Models;
 using AppscoreAncestry.Services;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AppscoreAncestry.Controllers
 {
@@ -15,7 +15,7 @@ namespace AppscoreAncestry.Controllers
         }
 
         [HttpGet]
-        public ActionResult SearchBasic()
+        public IActionResult SearchBasic()
         {
             var model = new SearchModel
             {
@@ -27,7 +27,7 @@ namespace AppscoreAncestry.Controllers
         }
 
         [HttpPost]
-        public ActionResult SearchBasic(SearchModel model, string pageNumber)
+        public IActionResult SearchBasic(SearchModel model, string pageNumber)
         {
             if (!string.IsNullOrEmpty(pageNumber))
             {
@@ -42,7 +42,7 @@ namespace AppscoreAncestry.Controllers
         }
 
         [HttpGet]
-        public ActionResult SearchAdvance()
+        public IActionResult SearchAdvance()
         {
             var model = new SearchModel
             {
@@ -54,7 +54,7 @@ namespace AppscoreAncestry.Controllers
         }
 
         [HttpPost]
-        public ActionResult SearchAdvance(SearchModel model)
+        public IActionResult SearchAdvance(SearchModel model)
         {
             model.SearchResults = service.AncestrySearch(
                 model.Name,
